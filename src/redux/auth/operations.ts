@@ -1,74 +1,66 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import type { AuthUser, LoginCredentials, RegisterCredentials } from "./types";
+import { auth } from "../../service/firebase";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  updateProfile,
+} from "firebase/auth";
+import type { User } from "firebase/auth";
+const mapFirebaseUserToAuthUser = (user: User): AuthUser => ({
+  uid: user.uid,
+  displayName: user.displayName, // тут може бути null, якщо так тип в інтерфейсі
+  email: user.email || "",
+});
 
-const fakeRegisterAPI = async (
-  data: RegisterCredentials
-): Promise<AuthUser> => {
-  return new Promise((resolve) =>
-    setTimeout(
-      () =>
-        resolve({
-          uid: "123",
-          displayName: data.displayName || "User",
-          email: data.email,
-        }),
-      1000
-    )
-  );
-};
-
-const fakeLoginAPI = async (data: LoginCredentials): Promise<AuthUser> => {
-  return new Promise((resolve) =>
-    setTimeout(
-      () =>
-        resolve({
-          uid: "123",
-          displayName: "User",
-          email: data.email,
-        }),
-      1000
-    )
-  );
-};
-
-const fakeLogoutAPI = async (): Promise<void> => {
-  return new Promise((resolve) => setTimeout(resolve, 500));
-};
-
-// Реєстрація
 export const registerUser = createAsyncThunk<AuthUser, RegisterCredentials>(
   "auth/registerUser",
   async (userData, { rejectWithValue }) => {
     try {
-      const response = await fakeRegisterAPI(userData);
-      return response;
-    } catch {
-      return rejectWithValue("Register failed");
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        userData.email,
+        userData.password
+      );
+
+      if (userData.displayName) {
+        await updateProfile(userCredential.user, {
+          displayName: userData.displayName,
+        });
+      }
+
+      return mapFirebaseUserToAuthUser(userCredential.user);
+    } catch (error: any) {
+      return rejectWithValue(error?.message || "Register failed");
     }
   }
 );
 
-// Логін
 export const loginUser = createAsyncThunk<AuthUser, LoginCredentials>(
   "auth/loginUser",
   async (credentials, { rejectWithValue }) => {
     try {
-      const response = await fakeLoginAPI(credentials);
-      return response;
-    } catch {
-      return rejectWithValue("Login failed");
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        credentials.email,
+        credentials.password
+      );
+
+      return mapFirebaseUserToAuthUser(userCredential.user);
+    } catch (error: any) {
+      return rejectWithValue(error?.message || "Login failed");
     }
   }
 );
 
-// Вихід
 export const logoutUser = createAsyncThunk<void>(
   "auth/logoutUser",
   async (_, { rejectWithValue }) => {
     try {
-      await fakeLogoutAPI();
-    } catch {
-      return rejectWithValue("Logout failed");
+      await signOut(auth);
+    } catch (error: any) {
+      return rejectWithValue(error?.message || "Logout failed");
     }
   }
 );

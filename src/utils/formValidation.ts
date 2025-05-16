@@ -20,6 +20,12 @@ const confirmPasswordValid = Yup.string()
   .oneOf([Yup.ref("password"), null], "Passwords must match")
   .required("Confirm password is required");
 
+const validationSchematitle = Yup.string()
+  .trim()
+  .min(1, "Title is required")
+  .max(50, "Title too long")
+  .required("Title is required");
+
 // Схема для реєстрації
 export const orderSchemaReg = Yup.object({
   email: emailValid,
@@ -31,6 +37,10 @@ export const orderSchemaReg = Yup.object({
 export const orderSchemaLogin = Yup.object({
   email: emailValid,
   password: passwordValid,
+});
+
+export const orderSchemaTodolist = Yup.object({
+  title: validationSchematitle,
 });
 
 // --- Типи для форм (опціонально, якщо хочеш типізувати дані) ---

@@ -2,25 +2,25 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import { database } from "../../service/firebase";
 import { ref, push, set, update, remove, get } from "firebase/database";
 
-  export const fetchTodoLists = createAsyncThunk(
-    "tasks/fetchAll",
-    async ({ userId }: { userId: string }, thunkAPI) => {
-      try {
-        const listsRef = ref(database, "todoLists");
-        const snapshot = await get(listsRef);
-        const lists = snapshot.val();
+export const fetchTodoLists = createAsyncThunk(
+  "tasks/fetchAll",
+  async ({ userId }: { userId: string }, thunkAPI) => {
+    try {
+      const listsRef = ref(database, "todoLists");
+      const snapshot = await get(listsRef);
+      const lists = snapshot.val();
 
-        if (!lists) return [];
+      if (!lists) return [];
 
-        // Повертаємо лише списки, де userId є admin або viewer
-        return Object.entries(lists)
-          .map(([id, list]: any) => ({ id, ...list }))
-          .filter((list) => list.sharedWith?.[userId]);
-      } catch (error: any) {
-        return thunkAPI.rejectWithValue(error.message);
-      }
+      // Повертаємо лише списки, де userId є admin або viewer
+      return Object.entries(lists)
+        .map(([id, list]: any) => ({ id, ...list }))
+        .filter((list) => list.sharedWith?.[userId]);
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue(error.message);
     }
-  );
+  }
+);
 
 export const createTodoList = createAsyncThunk(
   "tasks/create",
@@ -33,6 +33,7 @@ export const createTodoList = createAsyncThunk(
         createdAt: Date.now(),
         sharedWith: { [userId]: "admin" },
       };
+      console.log(newList);
       await set(listRef, newList);
       return { id: listRef.key, ...newList };
     } catch (error: any) {
