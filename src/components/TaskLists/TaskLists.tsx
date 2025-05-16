@@ -13,6 +13,7 @@ import TaskListItem from "../TaskListItem/TaskListItem";
 import type { AppDispatch } from "../../redux/store";
 import { orderSchemaTodolist } from "../../utils/formValidation";
 import { Formik, Form, Field, ErrorMessage, type FormikHelpers } from "formik";
+import Loader from "../Loader/Loader";
 
 interface Props {
   userId: string;
@@ -74,7 +75,7 @@ const TaskLists = ({ userId }: Props) => {
         )}
       </Formik>
 
-      {isLoading && <p className="text-gray-600">Loading...</p>}
+      {isLoading && <Loader height="23" width="20" />}
       {error && <p className="text-red-500">Error: {error}</p>}
 
       {todoLists.length === 0 && !isLoading ? (

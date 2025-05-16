@@ -1,7 +1,8 @@
 import type { FirebaseApp } from "firebase/app";
 import { initializeApp } from "firebase/app";
 import { getAuth, type Auth } from "firebase/auth";
-import { getDatabase, type Database } from "firebase/database";
+
+import { getFirestore, type Firestore } from "firebase/firestore";
 
 interface FirebaseConfig {
   apiKey: string;
@@ -26,6 +27,6 @@ const firebaseConfig: FirebaseConfig = {
 
 const app: FirebaseApp = initializeApp(firebaseConfig);
 const auth: Auth = getAuth(app);
-const database: Database = getDatabase(app);
+const database: Firestore = getFirestore(app);
 
 export { app, auth, database };

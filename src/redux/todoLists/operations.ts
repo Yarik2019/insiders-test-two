@@ -1,47 +1,59 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { database } from "../../service/firebase";
-import { ref, push, set, update, remove, get } from "firebase/database";
+import { database } from "../../service/firebase"; // Firestore інстанс
+import {
+  collection,
+  doc,
+  getDocs,
+  setDoc,
+  updateDoc,
+  deleteDoc,
+} from "firebase/firestore";
 
+// Отримати всі списки, де користувач має доступ (admin або viewer)
 export const fetchTodoLists = createAsyncThunk(
   "tasks/fetchAll",
   async ({ userId }: { userId: string }, thunkAPI) => {
     try {
-      const listsRef = ref(database, "todoLists");
-      const snapshot = await get(listsRef);
-      const lists = snapshot.val();
+      const todoListsCol = collection(database, "todoLists"); // тут database — Firestore
+      const snapshot = await getDocs(todoListsCol);
 
-      if (!lists) return [];
-
-      // Повертаємо лише списки, де userId є admin або viewer
-      return Object.entries(lists)
-        .map(([id, list]: any) => ({ id, ...list }))
+      // Отримуємо масив списків, фільтруємо по доступу користувача
+      const lists = snapshot.docs
+        .map((doc) => ({ id: doc.id, ...doc.data() }))
         .filter((list) => list.sharedWith?.[userId]);
+
+      return lists;
     } catch (error: any) {
       return thunkAPI.rejectWithValue(error.message);
     }
   }
 );
 
+// Створити новий список задач
 export const createTodoList = createAsyncThunk(
   "tasks/create",
   async ({ userId, title }: { userId: string; title: string }, thunkAPI) => {
     try {
-      const listRef = push(ref(database, "todoLists"));
+      const todoListsCol = collection(database, "todoLists"); // Firestore collection
       const newList = {
         title,
         createdBy: userId,
         createdAt: Date.now(),
         sharedWith: { [userId]: "admin" },
       };
-      console.log(newList);
-      await set(listRef, newList);
-      return { id: listRef.key, ...newList };
+
+      // Автоматично генеруємо новий документ із ID
+      const newDocRef = doc(todoListsCol);
+      await setDoc(newDocRef, newList);
+
+      return { id: newDocRef.id, ...newList };
     } catch (error: any) {
       return thunkAPI.rejectWithValue(error.message);
     }
   }
 );
 
+// Оновити назву списку задач
 export const updateTodoList = createAsyncThunk(
   "tasks/update",
   async (
@@ -49,8 +61,8 @@ export const updateTodoList = createAsyncThunk(
     thunkAPI
   ) => {
     try {
-      const listRef = ref(database, `todoLists/${listId}`);
-      await update(listRef, { title: newTitle });
+      const listDoc = doc(database, "todoLists", listId);
+      await updateDoc(listDoc, { title: newTitle });
       return { listId, newTitle };
     } catch (error: any) {
       return thunkAPI.rejectWithValue(error.message);
@@ -58,12 +70,13 @@ export const updateTodoList = createAsyncThunk(
   }
 );
 
+// Видалити список задач
 export const deleteTodoList = createAsyncThunk(
   "tasks/delete",
   async ({ listId }: { listId: string }, thunkAPI) => {
     try {
-      const listRef = ref(database, `todoLists/${listId}`);
-      await remove(listRef);
+      const listDoc = doc(database, "todoLists", listId);
+      await deleteDoc(listDoc);
       return listId;
     } catch (error: any) {
       return thunkAPI.rejectWithValue(error.message);

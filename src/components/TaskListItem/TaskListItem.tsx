@@ -24,9 +24,7 @@ const TaskListItem = ({ listId, title }: Props) => {
   };
 
   const handleDelete = () => {
-    if (confirm("Are you sure you want to delete this list?")) {
-      dispatch(deleteTodoList({ listId }));
-    }
+    dispatch(deleteTodoList({ listId }));
   };
 
   return (
@@ -41,17 +39,24 @@ const TaskListItem = ({ listId, title }: Props) => {
           className="flex-grow border px-2 py-1 mr-4"
         />
       ) : (
-        <span
-          className="flex-grow cursor-pointer"
-          onClick={() => setIsEditing(true)}
-        >
-          {title}
-        </span>
+        <>
+          <span className="flex-grow cursor-pointer">{title}</span>
+          {/* Іконка редагування */}
+          <button
+            onClick={() => setIsEditing(true)}
+            className="text-gray-600 hover:text-gray-800 px-2 mr-2"
+            title="Edit"
+            aria-label="Edit todo list title"
+          >
+            ✏️
+          </button>
+        </>
       )}
       <button
         onClick={handleDelete}
         className="text-red-600 hover:text-red-800 px-2"
         title="Delete"
+        aria-label="Delete todo list"
       >
         🗑️
       </button>
