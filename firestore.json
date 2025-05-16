@@ -1,0 +1,86 @@
+{
+  "users": {
+    "user_1": {
+      "email": "admin@example.com",
+      "name": "Admin User",
+      "createdAt": { ".sv": "timestamp" }
+    },
+    "user_2": {
+      "email": "viewer@example.com",
+      "name": "Viewer User",
+      "createdAt": { ".sv": "timestamp" }
+    }
+  },
+
+  "todoLists": {
+    "list_1": {
+      "title": "Frontend Tasks",
+      "ownerId": "user_1",
+      "createdAt": { ".sv": "timestamp" },
+      "updatedAt": { ".sv": "timestamp" },
+      "_collections": {
+        "tasks": {
+          "task_1": {
+            "title": "Create Login Page",
+            "description": "Design and implement login screen",
+            "completed": false,
+            "createdBy": "user_1",
+            "createdAt": { ".sv": "timestamp" },
+            "updatedAt": { ".sv": "timestamp" }
+          },
+          "task_2": {
+            "title": "Setup Firebase Auth",
+            "description": "Integrate Firebase authentication",
+            "completed": true,
+            "createdBy": "user_1",
+            "createdAt": { ".sv": "timestamp" },
+            "updatedAt": { ".sv": "timestamp" }
+          }
+        },
+        "collaborators": {
+          "user_2": {
+            "userId": "user_2",
+            "email": "viewer@example.com",
+            "role": "viewer",
+            "invitedAt": { ".sv": "timestamp" }
+          }
+        }
+      }
+    },
+
+    "list_2": {
+      "title": "Backend Tasks",
+      "ownerId": "user_2",
+      "createdAt": { ".sv": "timestamp" },
+      "updatedAt": { ".sv": "timestamp" },
+      "_collections": {
+        "tasks": {
+          "task_3": {
+            "title": "Set up Firestore rules",
+            "description": "Write rules to protect data",
+            "completed": false,
+            "createdBy": "user_2",
+            "createdAt": { ".sv": "timestamp" },
+            "updatedAt": { ".sv": "timestamp" }
+          },
+          "task_4": {
+            "title": "Create REST API endpoints",
+            "description": "Create API routes for task CRUD",
+            "completed": false,
+            "createdBy": "user_2",
+            "createdAt": { ".sv": "timestamp" },
+            "updatedAt": { ".sv": "timestamp" }
+          }
+        },
+        "collaborators": {
+          "user_1": {
+            "userId": "user_1",
+            "email": "admin@example.com",
+            "role": "admin",
+            "invitedAt": { ".sv": "timestamp" }
+          }
+        }
+      }
+    }
+  }
+}
